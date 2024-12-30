@@ -25,15 +25,22 @@ func NewNoteRepository() NoteRepository {
 }
 
 func (r *noteRepository) CreateNote(note *models.Note) (*models.Note, error) {
+	// Buat note baru
 	if err := r.DB.Create(note).Error; err != nil {
 		return nil, err
 	}
+
+	// Muat relasi kategori agar nama kategori tersedia
+	if err := r.DB.Preload("Category").First(note, note.ID).Error; err != nil {
+		return nil, err
+	}
+
 	return note, nil
 }
 
 func (r *noteRepository) GetAllNotes() ([]*models.Note, error) {
 	var notes []*models.Note
-	if err := r.DB.Find(&notes).Error; err != nil {
+	if err := r.DB.Preload("Category").Find(&notes).Error; err != nil {
 		return nil, err
 	}
 
@@ -42,7 +49,7 @@ func (r *noteRepository) GetAllNotes() ([]*models.Note, error) {
 
 func (r *noteRepository) FindNoteById(id uint) (*models.Note, error) {
 	var note models.Note
-	if err := r.DB.First(&note, id).Error; err != nil {
+	if err := r.DB.Preload("Category").First(&note, id).Error; err != nil {
 		return nil, err
 	}
 
@@ -50,7 +57,7 @@ func (r *noteRepository) FindNoteById(id uint) (*models.Note, error) {
 }
 
 func (r *noteRepository) UpdateNote(note *models.Note) (*models.Note, error) {
-	if err := r.DB.Save(note).Error; err != nil {
+	if err := r.DB.Preload("Category").Save(note).Error; err != nil {
 		return nil, err
 	}
 	return note, nil

@@ -31,6 +31,7 @@ func main() {
 	app.Get("/metrics", monitor.New(monitor.Config{Title: "MyService Metrics Page"}))
 
 	routes.CategoryRoutes(app)
+	routes.NoteRoutes(app)
 
 	PORT := os.Getenv("PORT")
 	if PORT == "" {
